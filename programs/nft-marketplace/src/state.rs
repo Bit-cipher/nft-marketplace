@@ -1,8 +1,7 @@
- use anchor_lang::prelude::*;
+use anchor_lang::prelude::*;
 
- #[account]
- #[derive(InitSpace)]
-
+#[account]
+#[derive(InitSpace)]
 pub struct Marketplace {
     pub admin: Pubkey,
     pub fee: u16,
@@ -15,17 +14,16 @@ pub struct Marketplace {
 
 #[account]
 #[derive(InitSpace)]
-
 pub struct Listing {
     pub maker: Pubkey,
     pub asset: Pubkey,
+    pub payment_mint: Pubkey,
     pub price: u64,
     pub bump: u8,
 }
 
 #[account]
 #[derive(InitSpace)]
-
 pub struct Offer {
     pub maker: Pubkey,
     pub asset: Pubkey,

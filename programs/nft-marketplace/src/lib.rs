@@ -6,7 +6,6 @@ pub mod state;
 use anchor_lang::prelude::*;
 
 pub use constants::*;
-pub use errors::*;
 
 pub use instructions::*;
 pub use state::*;
@@ -24,8 +23,18 @@ pub mod nft_marketplace {
         ctx.accounts.create_listing(price, &ctx.bumps)
     }
 
+    pub fn list_with_token(ctx: Context<ListWithToken>, price: u64) -> Result<()> {
+        ctx.accounts.create_listing(price, &ctx.bumps)
+    }
+
     pub fn buy(ctx: Context<Buy>) -> Result<()> {
         ctx.accounts.send_sol()?;
+        ctx.accounts.receive_nft()?;
+        ctx.accounts.receive_rewards()
+    }
+
+    pub fn buy_with_token(ctx: Context<BuyWithToken>) -> Result<()> {
+        ctx.accounts.send_tokens()?;
         ctx.accounts.receive_nft()?;
         ctx.accounts.receive_rewards()
     }
@@ -42,8 +51,8 @@ pub mod nft_marketplace {
         ctx.accounts.accept_offer()
     }
 
-    pub fn withdraw(ctx: Context<Withdraw>) -> Result<()> {
-        ctx.accounts.withdraw()
+    pub fn cancel_offer(ctx: Context<CancelOffer>) -> Result<()> {
+        ctx.accounts.cancel_offer()
     }
 
     pub fn withdraw_fee(ctx: Context<WithdrawFee>, amount: u64) -> Result<()> {

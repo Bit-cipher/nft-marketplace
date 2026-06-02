@@ -6,9 +6,9 @@ use crate::Marketplace;
 #[derive(Accounts)]
 #[instruction(name: String)]
 pub struct Initialize<'info> {
-     #[account(mut)]
-     pub admin: Signer<'info>,
-    
+    #[account(mut)]
+    pub admin: Signer<'info>,
+
     #[account(
         init,
         payer = admin,
@@ -40,20 +40,18 @@ pub struct Initialize<'info> {
     pub rewards_mint: InterfaceAccount<'info, Mint>,
 
     pub system_program: Program<'info, System>,
-    pub token_program: Interface<'info, TokenInterface>
+    pub token_program: Interface<'info, TokenInterface>,
 }
 
 impl<'info> Initialize<'info> {
     pub fn init(&mut self, name: String, fee: u16, bumps: &InitializeBumps) -> Result<()> {
-
-
         self.marketplace.set_inner(Marketplace {
             admin: self.admin.key(),
-            fee, 
+            fee,
             bump: bumps.marketplace,
             treasury_bump: bumps.treasury,
             rewards_bump: bumps.rewards_mint,
-            name
+            name,
         });
         Ok(())
     }

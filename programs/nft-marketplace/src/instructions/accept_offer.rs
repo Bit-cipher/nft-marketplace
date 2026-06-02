@@ -41,7 +41,7 @@ pub struct AcceptOffer<'info> {
     #[account(
         mut,
         close = maker,
-        seeds = [b"offer", offer_maker.key().as_ref(), asset.key().as_ref()],
+        seeds = [b"offer", asset.key().as_ref(), offer_maker.key().as_ref()],
         bump = offer.bump,
         has_one = asset,
     )]
@@ -70,12 +70,15 @@ impl<'info> AcceptOffer<'info> {
     pub fn send_sol(&mut self) -> Result<()> {
         let price = self.offer.price;
         let fee = (price as u128)
-        .checked_mul(self.marketplace.fee as u128)
-        .ok_or(crate::errors::ErrorCode::MathOverflow)?
-        .checked_div(10_000)
-        .ok_or(crate::errors::ErrorCode::MathOverflow)? as u64;
+            .checked_mul(self.marketplace.fee as u128)
+            .ok_or(crate::errors::ErrorCode::MathOverflow)?
+            .checked_div(10_000)
+            .ok_or(crate::errors::ErrorCode::MathOverflow)? as u64;
 
-        require!(self.offer.to_account_info().lamports() >= fee, crate::errors::ErrorCode::InsufficientEscrowBalance);
+        require!(
+            self.offer.to_account_info().lamports() >= price,
+            crate::errors::ErrorCode::InsufficientEscrowBalance
+        );
 
         **self.offer.to_account_info().try_borrow_mut_lamports()? -= fee;
         **self.treasury.to_account_info().try_borrow_mut_lamports()? += fee;

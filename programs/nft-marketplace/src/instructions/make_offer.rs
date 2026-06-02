@@ -3,7 +3,6 @@ use anchor_lang::{
     system_program::{transfer, Transfer},
 };
 
-
 use crate::*;
 
 #[derive(Accounts)]
@@ -18,7 +17,7 @@ pub struct MakeOffer<'info> {
     #[account(
         init,
         payer = maker,
-        seeds = [b"offer", maker.key().as_ref(), asset.key().as_ref()],
+        seeds = [b"offer", asset.key().as_ref(), maker.key().as_ref()],
         bump,
         space = 8 + Offer::INIT_SPACE,
     )]
@@ -36,13 +35,16 @@ impl<'info> MakeOffer<'info> {
             bump: bumps.offer,
         });
 
-        transfer(CpiContext::new(
-            self.system_program.to_account_info(),
-            Transfer {
-                from: self.maker.to_account_info(),
-                to: self.offer.to_account_info(),
-            }
-        ), price)?;
+        transfer(
+            CpiContext::new(
+                self.system_program.to_account_info(),
+                Transfer {
+                    from: self.maker.to_account_info(),
+                    to: self.offer.to_account_info(),
+                },
+            ),
+            price,
+        )?;
 
         Ok(())
     }

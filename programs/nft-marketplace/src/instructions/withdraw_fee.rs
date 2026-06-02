@@ -30,7 +30,10 @@ pub struct WithdrawFee<'info> {
 
 impl<'info> WithdrawFee<'info> {
     pub fn withdraw_fee(&mut self, amount: u64) -> Result<()> {
-        require!(self.treasury.to_account_info().lamports() >= amount, crate::errors::ErrorCode::InsufficientEscrowBalance);
+        require!(
+            self.treasury.to_account_info().lamports() >= amount,
+            crate::errors::ErrorCode::InsufficientEscrowBalance
+        );
 
         let marketplace_key = self.marketplace.key();
         let seeds: &[&[u8]] = &[
@@ -40,14 +43,17 @@ impl<'info> WithdrawFee<'info> {
         ];
         let signer_seeds = &[seeds];
 
-        transfer(CpiContext::new_with_signer(
-            self.system_program.to_account_info(),
-            Transfer {
-                from: self.treasury.to_account_info(),
-                to: self.admin.to_account_info(),
-            },
-            signer_seeds,
-        ), amount)?;
+        transfer(
+            CpiContext::new_with_signer(
+                self.system_program.to_account_info(),
+                Transfer {
+                    from: self.treasury.to_account_info(),
+                    to: self.admin.to_account_info(),
+                },
+                signer_seeds,
+            ),
+            amount,
+        )?;
 
         Ok(())
     }

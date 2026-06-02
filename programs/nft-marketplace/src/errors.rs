@@ -8,4 +8,6 @@ pub enum ErrorCode {
     MathOverflow,
     #[msg("Insufficient escrow balance")]
     InsufficientEscrowBalance,
+    #[msg("Invalid payment mint for this listing")]
+    InvalidPaymentMint,
 }
